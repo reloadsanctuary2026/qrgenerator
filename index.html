@@ -2,133 +2,150 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>QR Code Generator</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <style>
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: #0f1115;
     color: #eee;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     min-height: 100vh;
-    margin: 0;
-    padding: 24px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 16px;
   }
   .card {
     background: #1a1d24;
-    border-radius: 16px;
-    padding: 32px;
+    border-radius: 20px;
+    padding: 28px;
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
   }
-  h1 { font-size: 18px; margin: 0 0 20px; color: #fff; }
-  label.field-label {
+  h1 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+    letter-spacing: 0.3px;
+  }
+  .field-label {
     display: block;
-    font-size: 12px;
-    color: #999;
-    margin-bottom: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 6px;
   }
   input[type="text"] {
     width: 100%;
-    padding: 12px 14px;
+    padding: 11px 14px;
     border-radius: 10px;
-    border: 1px solid #333;
+    border: 1.5px solid #2a2d36;
     background: #0f1115;
     color: #fff;
     font-size: 14px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
+    outline: none;
+    transition: border-color .15s;
   }
+  input[type="text"]:focus { border-color: #4f8cff; }
+  .row-2 { display: flex; gap: 10px; margin-bottom: 14px; }
+  .row-2 > div { flex: 1; }
   select {
     width: 100%;
-    padding: 10px 14px;
+    padding: 10px 12px;
     border-radius: 10px;
-    border: 1px solid #333;
+    border: 1.5px solid #2a2d36;
     background: #0f1115;
     color: #fff;
     font-size: 13px;
-    margin-bottom: 12px;
+    outline: none;
+    cursor: pointer;
   }
-  .row-2 {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  .row-2 > div { flex: 1; }
+  .color-row { display: flex; gap: 10px; margin-bottom: 14px; }
   .color-field {
+    flex: 1;
     display: flex;
     align-items: center;
-    gap: 8px;
-    border: 1px solid #333;
+    gap: 10px;
+    border: 1.5px solid #2a2d36;
     border-radius: 10px;
-    padding: 6px 10px;
+    padding: 8px 12px;
     background: #0f1115;
+    cursor: pointer;
   }
   .color-field input[type="color"] {
-    width: 28px;
-    height: 28px;
-    border: none;
-    background: none;
-    padding: 0;
-    cursor: pointer;
+    width: 26px; height: 26px;
+    border: none; background: none; padding: 0; cursor: pointer;
+    border-radius: 6px;
   }
-  .color-field span { font-size: 12px; color: #ccc; }
-  .logo-toggle {
+  .color-field span { font-size: 12px; color: #aaa; }
+
+  .toggle-row {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
-    font-size: 13px;
-    color: #ccc;
+    gap: 10px;
+    margin-bottom: 18px;
+    cursor: pointer;
   }
-  .logo-toggle input { width: 16px; height: 16px; }
-  button {
+  .toggle-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: #4f8cff; cursor: pointer; }
+  .toggle-row span { font-size: 13px; color: #bbb; }
+
+  .btn {
     width: 100%;
-    padding: 12px;
-    border-radius: 10px;
+    padding: 13px;
+    border-radius: 12px;
     border: none;
-    background: #4f8cff;
-    color: #fff;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     margin-bottom: 8px;
+    transition: background .15s, transform .1s;
   }
-  button:hover { background: #3a75e8; }
-  button.secondary { background: #2a2d36; }
-  button.secondary:hover { background: #35383f; }
-  #qrbox {
-    display: flex;
-    justify-content: center;
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: #4f8cff; color: #fff; }
+  .btn-primary:hover { background: #3a78f2; }
+  .btn-secondary { background: #23262f; color: #ccc; }
+  .btn-secondary:hover { background: #2c303a; }
+
+  /* QR preview area */
+  #previewWrap {
+    margin-top: 20px;
+    display: none;
+    flex-direction: column;
     align-items: center;
-    margin: 20px 0;
-    padding: 16px;
-    background: #fff;
-    border-radius: 12px;
-    min-height: 200px;
+    gap: 12px;
   }
-  #qrCanvas { border-radius: 4px; display: block; }
-  .hint { font-size: 12px; color: #777; margin-top: -4px; margin-bottom: 16px; }
-  #placeholder { color: #999; font-size: 13px; }
+  #previewWrap.visible { display: flex; }
+  #qrCanvas {
+    border-radius: 14px;
+    display: block;
+    max-width: 100%;
+    height: auto;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+  }
+  .hint { font-size: 11px; color: #555; text-align: center; }
 </style>
 </head>
 <body>
 <div class="card">
   <h1>QR Code Generator</h1>
 
-  <label class="field-label">Isi (link / text)</label>
+  <label class="field-label">Link / Text</label>
   <input id="text" type="text" placeholder="Paste link atau text di sini..." />
 
   <div class="row-2">
     <div>
-      <label class="field-label">Ukuran</label>
+      <label class="field-label">Ukuran output</label>
       <select id="size">
-        <option value="200">Small (200px)</option>
-        <option value="300" selected>Medium (300px)</option>
-        <option value="500">Large (500px)</option>
+        <option value="300">300 px</option>
+        <option value="500" selected>500 px</option>
+        <option value="800">800 px</option>
       </select>
     </div>
     <div>
@@ -136,33 +153,33 @@
       <select id="shape">
         <option value="square" selected>Kotak</option>
         <option value="rounded">Rounded</option>
-        <option value="dots">Dots (bulat)</option>
+        <option value="dots">Dots</option>
       </select>
     </div>
   </div>
 
-  <div class="row-2">
-    <div class="color-field">
+  <div class="color-row">
+    <label class="color-field">
       <input type="color" id="fgColor" value="#000000" />
       <span>Warna QR</span>
-    </div>
-    <div class="color-field">
+    </label>
+    <label class="color-field">
       <input type="color" id="bgColor" value="#ffffff" />
       <span>Background</span>
-    </div>
+    </label>
   </div>
 
-  <label class="logo-toggle">
+  <label class="toggle-row">
     <input type="checkbox" id="useLogo" checked />
-    Sertakan logo Reload Kitchen di tengah
+    <span>Sertakan logo Reload Kitchen</span>
   </label>
 
-  <button onclick="generate()">Generate QR</button>
-  <button class="secondary" onclick="download()">Download PNG</button>
-  <div class="hint">QR di-generate langsung di browser, tanpa kirim data ke server manapun.</div>
+  <button class="btn btn-primary" onclick="generate()">Generate QR</button>
+  <button class="btn btn-secondary" onclick="download()">↓ Download PNG</button>
 
-  <div id="qrbox">
-    <span id="placeholder">QR bakal muncul di sini</span>
+  <div id="previewWrap">
+    <canvas id="qrCanvas"></canvas>
+    <span class="hint">QR di-generate lokal — data tidak dikirim ke server manapun.</span>
   </div>
 </div>
 
@@ -171,125 +188,106 @@ const LOGO_SRC = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAADbQAAATbCAYAAAD7
 const logoImg = new Image();
 logoImg.src = LOGO_SRC;
 
-function isFinderZone(row, col, moduleCount) {
-  const topLeft = row < 7 && col < 7;
-  const topRight = row < 7 && col >= moduleCount - 7;
-  const bottomLeft = row >= moduleCount - 7 && col < 7;
-  return topLeft || topRight || bottomLeft;
+function isFinderZone(r, c, mc) {
+  return (r < 7 && c < 7) || (r < 7 && c >= mc-7) || (r >= mc-7 && c < 7);
 }
-
-function roundRectPath(ctx, x, y, w, h, r) {
+function rrPath(ctx, x, y, w, h, r) {
   ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
   ctx.closePath();
 }
 
-function drawQR(canvas, text, size, shape, fgColor, bgColor, includeLogo) {
-  const qr = qrcode(0, includeLogo ? 'H' : 'M');
+function drawQR(canvas, text, size, shape, fg, bg, withLogo) {
+  const qr = qrcode(0, withLogo ? 'H' : 'M');
   qr.addData(text);
   qr.make();
-
-  const moduleCount = qr.getModuleCount();
-  const cellSize = size / moduleCount;
+  const mc = qr.getModuleCount();
+  const qz = 1;
+  const total = mc + qz * 2;
+  const cell = size / total;
+  const off = qz * cell;
 
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext('2d');
 
-  // background
-  ctx.fillStyle = bgColor;
+  ctx.fillStyle = bg;
   ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = fg;
 
-  ctx.fillStyle = fgColor;
-
-  for (let row = 0; row < moduleCount; row++) {
-    for (let col = 0; col < moduleCount; col++) {
+  for (let row = 0; row < mc; row++) {
+    for (let col = 0; col < mc; col++) {
       if (!qr.isDark(row, col)) continue;
-      const x = col * cellSize;
-      const y = row * cellSize;
-
-      // keep finder patterns as solid squares for reliable scanning
-      const finder = isFinderZone(row, col, moduleCount);
-      const effectiveShape = finder ? 'square' : shape;
-
-      if (effectiveShape === 'square') {
-        ctx.fillRect(x, y, cellSize, cellSize);
-      } else if (effectiveShape === 'rounded') {
-        roundRectPath(ctx, x, y, cellSize, cellSize, cellSize * 0.3);
+      const x = off + col * cell;
+      const y = off + row * cell;
+      const eff = isFinderZone(row, col, mc) ? 'square' : shape;
+      if (eff === 'square') {
+        ctx.fillRect(x, y, cell, cell);
+      } else if (eff === 'rounded') {
+        rrPath(ctx, x, y, cell, cell, cell * 0.3);
         ctx.fill();
-      } else if (effectiveShape === 'dots') {
-        const r = cellSize * 0.45;
+      } else {
         ctx.beginPath();
-        ctx.arc(x + cellSize / 2, y + cellSize / 2, r, 0, Math.PI * 2);
+        ctx.arc(x + cell/2, y + cell/2, cell * 0.45, 0, Math.PI*2);
         ctx.fill();
       }
     }
   }
 
-  if (includeLogo) {
-    const aspect = logoImg.naturalWidth / logoImg.naturalHeight;
-    const logoWidth = size * 0.4;
-    const logoHeight = logoWidth / aspect;
-    const pad = logoHeight * 0.35;
-    const boxWidth = logoWidth + pad * 2;
-    const boxHeight = logoHeight + pad * 2;
-    const cx = (size - boxWidth) / 2;
-    const cy = (size - boxHeight) / 2;
-
-    ctx.fillStyle = bgColor;
-    roundRectPath(ctx, cx, cy, boxWidth, boxHeight, 8);
+  if (withLogo) {
+    const asp = logoImg.naturalWidth / logoImg.naturalHeight;
+    const lw = size * 0.28;
+    const lh = lw / asp;
+    const pad = lh * 0.35;
+    const bw = lw + pad*2, bh = lh + pad*2;
+    const cx = (size - bw)/2, cy = (size - bh)/2;
+    ctx.fillStyle = bg;
+    rrPath(ctx, cx, cy, bw, bh, 8);
     ctx.fill();
-
-    ctx.drawImage(logoImg, cx + pad, cy + pad, logoWidth, logoHeight);
+    ctx.drawImage(logoImg, cx+pad, cy+pad, lw, lh);
   }
 }
 
 function generate() {
   const text = document.getElementById('text').value.trim();
-  const size = parseInt(document.getElementById('size').value);
-  const shape = document.getElementById('shape').value;
-  const fgColor = document.getElementById('fgColor').value;
-  const bgColor = document.getElementById('bgColor').value;
-  const useLogo = document.getElementById('useLogo').checked;
-  const box = document.getElementById('qrbox');
-
   if (!text) {
-    box.innerHTML = '<span style="color:#c00;font-size:13px;">Isi link/text dulu ya</span>';
+    document.getElementById('text').focus();
+    document.getElementById('text').style.borderColor = '#e55';
+    setTimeout(() => document.getElementById('text').style.borderColor = '', 1000);
     return;
   }
+  const size    = parseInt(document.getElementById('size').value);
+  const shape   = document.getElementById('shape').value;
+  const fg      = document.getElementById('fgColor').value;
+  const bg      = document.getElementById('bgColor').value;
+  const withLogo = document.getElementById('useLogo').checked;
+  const canvas  = document.getElementById('qrCanvas');
+  const wrap    = document.getElementById('previewWrap');
 
   function render() {
-    box.innerHTML = '';
-    const canvas = document.createElement('canvas');
-    canvas.id = 'qrCanvas';
-    box.appendChild(canvas);
-    drawQR(canvas, text, size, shape, fgColor, bgColor, useLogo);
+    drawQR(canvas, text, size, shape, fg, bg, withLogo);
+    wrap.classList.add('visible');
+    canvas.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  if (useLogo && !logoImg.complete) {
-    logoImg.onload = render;
-  } else {
-    render();
-  }
+  if (withLogo && !logoImg.complete) { logoImg.onload = render; }
+  else { render(); }
 }
 
 function download() {
   const canvas = document.getElementById('qrCanvas');
-  if (!canvas) {
-    alert('Generate QR dulu sebelum download.');
-    return;
-  }
-  const link = document.createElement('a');
-  link.download = 'qrcode.png';
-  link.href = canvas.toDataURL('image/png');
-  link.click();
+  if (!canvas.width) { alert('Generate QR dulu.'); return; }
+  const a = document.createElement('a');
+  a.download = 'qrcode-reload-kitchen.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
 }
 
-document.getElementById('text').addEventListener('keypress', function(e) {
+document.getElementById('text').addEventListener('keydown', e => {
   if (e.key === 'Enter') generate();
 });
 </script>
